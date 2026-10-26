@@ -1,0 +1,15 @@
+{
+	"fixed": {
+		"file_version": "0.1.0"
+	},
+	"info": {
+		"0409": {
+			"ProductVersion": "0.1.0",
+			"CompanyName": "My Company",
+			"FileDescription": "打工人专属极简隐蔽摸鱼小说阅读器",
+			"LegalCopyright": "© 2026, My Company",
+			"ProductName": "划水纪",
+			"Comments": "This is a comment"
+		}
+	}
+}

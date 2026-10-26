@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>划水纪 - HuaShui Reader</title>
+  <link rel="stylesheet" href="theme.css">
+</head>
+<body>
+  <!-- 自绘无标题文本栏，纯净全拖拽区域 + 右侧极简三件套 -->
+  <header id="titlebar" style="--wails-draggable: drag;">
+    <div class="titlebar-left">
+      <button class="sidebar-toggle-btn" id="btn-toggle-sidebar" title="展开/收起章节目录">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="18" height="18" rx="3" ry="3" />
+          <path d="M9 3v18" />
+          <rect x="3" y="3" width="6" height="18" rx="2" fill="currentColor" opacity="0.35" stroke="none" />
+        </svg>
+      </button>
+    </div>
+    <div class="title-actions">
+      <button class="win-btn" id="btn-win-min" title="最小化 (获焦按快捷键)">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg>
+      </button>
+      <button class="win-btn" id="btn-win-max" title="最大化/还原">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>
+      </button>
+      <button class="win-btn close" id="btn-win-close" title="退出应用">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div id="app-container">
+    <!-- 顶部导航切换 (文字不高亮，仅底部细线指示当前选页) -->
+    <nav class="nav-bar">
+      <div class="nav-tab" data-target="view-bookshelf">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        <span>书架</span>
+      </div>
+      <div class="nav-tab active" data-target="view-reader">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        <span>阅读</span>
+      </div>
+      <div class="nav-tab" data-target="view-source">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        <span>书源</span>
+      </div>
+      <div class="nav-tab" data-target="view-settings">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span>设置</span>
+      </div>
+    </nav>
+
+    <!-- 1. 书架视图 -->
+    <main class="view-panel" id="view-bookshelf">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <span style="font-size: 12px; font-weight: bold; color: var(--text);">我的藏书</span>
+        <button class="btn" id="btn-import-local" style="display: inline-flex; align-items: center; gap: 5px;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          <span>导入 TXT / MD</span>
+        </button>
+      </div>
+      <div class="book-grid" id="bookshelf-list">
+        <div style="color: var(--text-dim); text-align: center; margin-top: 40px; font-size: 11.5px;">书架空空如也，点击上方按钮导入文件</div>
+      </div>
+    </main>
+
+    <!-- 2. 阅读视图 -->
+    <main class="view-panel active" id="view-reader">
+      <div class="reader-header">
+        <span id="reader-book-title">尚未加载书籍</span>
+        <span id="reader-chapter-title">--</span>
+      </div>
+      <!-- 无缝滚动长文本容器 (隐藏滚动条) -->
+      <article class="reader-content" id="reader-scroll-container">
+        <div id="reader-chapters-wrapper">
+          <div style="color: var(--text-dim); text-align: center; margin-top: 40px; font-size: 12px;">
+            请在【书架】中导入本地 TXT / Markdown 文件开启阅读。
+          </div>
+        </div>
+        <div class="scroll-sentinel" id="bottom-sentinel"></div>
+      </article>
+    </main>
+
+    <!-- 3. 书源与聚合搜索视图 -->
+    <main class="view-panel" id="view-source">
+      <!-- 搜索栏区 -->
+      <div style="display: flex; gap: 6px; margin-bottom: 8px;">
+        <input type="text" id="source-search-input" placeholder="输入小说书名或作者..." style="flex: 1;">
+        <button class="btn" id="btn-source-search" style="display: inline-flex; align-items: center; gap: 4px;">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <span>全网搜索</span>
+        </button>
+      </div>
+
+      <!-- 搜索状态与源统计 -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <span id="source-status" style="font-size: 11px; color: var(--text-dim);">已就绪 (书源: 0)</span>
+        <button id="btn-toggle-import-box" style="background: none; border: none; font-size: 11px; color: var(--text-dim); cursor: pointer; text-decoration: underline;">
+          导入书源规则
+        </button>
+      </div>
+
+      <!-- 导入书源折叠区 -->
+      <div id="source-import-box" style="display: none; background: transparent; border: 1px dashed var(--border); border-radius: 4px; padding: 8px; margin-bottom: 10px;">
+        <div style="margin-bottom: 8px;">
+          <button class="btn" id="btn-import-source-file" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+            <span>选择本地书源文件 (*.json)</span>
+          </button>
+        </div>
+        <div style="display: flex; gap: 6px; margin-bottom: 6px;">
+          <input type="text" id="source-url-input" placeholder="粘贴书源 JSON 网络链接或在线订阅..." style="flex: 1;">
+          <button class="btn btn-secondary" id="btn-import-source-url">下载订阅</button>
+        </div>
+        <textarea id="source-json-input" placeholder="或直接在此粘贴书源 JSON 规则文本..." rows="2" style="width: 100%; background: transparent; border: 1px solid var(--border); color: var(--text); border-radius: 3px; font-size: 11px; padding: 4px; outline: none; resize: none; margin-bottom: 6px;"></textarea>
+        <button class="btn btn-secondary" id="btn-import-source-json" style="width: 100%;">导入粘贴的规则文本</button>
+      </div>
+
+      <!-- 搜索结果展示容器 -->
+      <div class="book-grid" id="search-results-list" style="flex: 1; overflow-y: auto;">
+        <div style="color: var(--text-dim); text-align: center; margin-top: 30px; font-size: 11.5px;">
+          在上方输入书名搜索聚合书源的小说
+        </div>
+      </div>
+    </main>
+
+    <!-- 4. 设置视图 -->
+    <main class="view-panel" id="view-settings" style="overflow-y: auto;">
+      <!-- 字体设置 -->
+      <div class="setting-item">
+        <label>阅读正文字体</label>
+        <div style="display: flex; gap: 6px; align-items: center;">
+          <select id="setting-font-family-select" style="background: transparent; border: 1px solid var(--border); color: var(--text); font-size: 11.5px; padding: 3px 6px; border-radius: 3px; outline: none;">
+            <option value="Microsoft YaHei">微软雅黑</option>
+            <option value="PingFang SC">苹方 (PingFang)</option>
+            <option value="SimSun">宋体 (SimSun)</option>
+            <option value="KaiTi">楷体 (KaiTi)</option>
+            <option value="FangSong">仿宋 (FangSong)</option>
+            <option value="LXGW WenKai">霞鹜文楷</option>
+            <option value="Source Han Sans CN">思源黑体</option>
+            <option value="custom">自定义字体...</option>
+          </select>
+          <input type="text" id="setting-font-family" placeholder="字体名称" style="width: 80px; display: none;" value="Microsoft YaHei">
+        </div>
+      </div>
+
+      <div class="setting-item">
+        <label>字号大小 (px)</label>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <input type="range" id="setting-font-size" min="11" max="24" value="14" style="width: 90px;">
+          <span id="setting-font-size-val" style="font-size: 11.5px; color: var(--text-dim); width: 30px; text-align: right;">14px</span>
+        </div>
+      </div>
+
+      <div class="setting-item">
+        <label>正文行距倍数</label>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <input type="range" id="setting-line-height" min="1.2" max="2.4" step="0.1" value="1.6" style="width: 90px;">
+          <span id="setting-line-height-val" style="font-size: 11.5px; color: var(--text-dim); width: 30px; text-align: right;">1.6</span>
+        </div>
+      </div>
+
+      <!-- 配色方案 -->
+      <div class="setting-item">
+        <label>背景底色</label>
+        <div style="display: flex; gap: 6px; align-items: center;">
+          <input type="text" id="setting-bg-color" style="width: 75px;" value="#1E1E1E">
+          <input type="color" id="setting-bg-picker" value="#1E1E1E" title="打开底色选择器">
+          <button class="btn btn-secondary" id="btn-screen-pick" style="display: inline-flex; align-items: center; gap: 4px;" title="点击后单击屏幕任意软件取色">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2l4 4L7 17H3v-4L14 2z"/><line x1="16" y1="4" x2="20" y2="8"/></svg>
+            <span>吸色</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="setting-item">
+        <label>面板与卡片底色</label>
+        <div style="display: flex; gap: 6px; align-items: center;">
+          <input type="text" id="setting-panel-color" style="width: 75px;" value="#252526">
+          <input type="color" id="setting-panel-picker" value="#252526" title="打开面板颜色选择器">
+        </div>
+      </div>
+
+      <div class="setting-item">
+        <label>正文字体颜色</label>
+        <div style="display: flex; gap: 6px; align-items: center;">
+          <input type="text" id="setting-text-color" style="width: 75px;" value="#D4D4D4">
+          <input type="color" id="setting-text-picker" value="#D4D4D4" title="打开字体颜色选择器">
+        </div>
+      </div>
+
+      <div class="setting-item">
+        <label>次要/弱化说明颜色</label>
+        <div style="display: flex; gap: 6px; align-items: center;">
+          <input type="text" id="setting-text-dim-color" style="width: 75px;" value="#737373">
+          <input type="color" id="setting-text-dim-picker" value="#737373" title="打开说明颜色选择器">
+        </div>
+      </div>
+
+      <div class="setting-item">
+        <label>强调高亮色</label>
+        <div style="display: flex; gap: 6px; align-items: center;">
+          <input type="text" id="setting-accent-color" style="width: 75px;" value="#8E8E8E">
+          <input type="color" id="setting-accent-picker" value="#8E8E8E" title="打开强调高亮色选择器">
+        </div>
+      </div>
+
+      <div class="setting-item">
+        <label>窗口内最小化快捷键</label>
+        <input type="text" id="setting-min-key" value="Ctrl + Alt + H" style="width: 110px; text-align: center;">
+      </div>
+
+      <!-- 缓存与存储 -->
+      <div class="setting-item" style="align-items: flex-start; flex-direction: column; gap: 6px;">
+        <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+          <label>离线缓存与存储</label>
+          <span id="cache-size-display" style="font-size: 11px; color: var(--text-dim);">已缓存: 0 B</span>
+        </div>
+        <div style="display: flex; gap: 6px; width: 100%;">
+          <input type="text" id="setting-cache-dir" value="./data (默认)" style="flex: 1; font-size: 11px;" readonly>
+          <button class="btn btn-secondary" id="btn-select-cache-dir" style="white-space: nowrap;">更改目录</button>
+          <button class="btn btn-secondary" id="btn-clear-cache" style="white-space: nowrap; color: #E57373;">清空缓存</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- 章节目录侧边抽屉 (占窗口 2/3，从左往右滑出，无滚动条) -->
+  <aside id="chapter-sidebar" class="sidebar-drawer">
+    <div class="sidebar-header">
+      <div class="sidebar-title" id="sidebar-book-title">章节目录</div>
+      <div class="sidebar-count" id="sidebar-chap-count">0 章</div>
+    </div>
+    <div class="sidebar-content" id="sidebar-chapters-list">
+      <div style="color: var(--text-dim); text-align: center; margin-top: 40px; font-size: 11px;">
+        暂未载入书籍目录
+      </div>
+    </div>
+  </aside>
+  <!-- 遮罩层 (占剩余 1/3，点击收起) -->
+  <div id="sidebar-backdrop" class="sidebar-backdrop"></div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

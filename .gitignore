@@ -1,0 +1,23 @@
+# Build output & task caches
+bin/
+data/
+.task/
+*.syso
+*.exe
+*.zip
+
+# Dependencies
+frontend/node_modules/
+
+# OS and Editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Windows NSIS & Mobile generated
+build/windows/nsis/MicrosoftEdgeWebview2Setup.exe
+build/ios/xcode/overlay.json
+build/ios/xcode/gen/
+build/android/overlay.json
+build/android/gen/

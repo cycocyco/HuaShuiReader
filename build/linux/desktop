@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Name=划水纪
+Comment=打工人专属极简隐蔽摸鱼小说阅读器
+# The Exec line includes %u to pass the URL to the application
+Exec=/usr/local/bin/huashuireader.exe %u
+Terminal=false
+Type=Application
+Icon=huashuireader.exe
+Categories=Utility;
+StartupWMClass=huashuireader.exe
+
+ 
